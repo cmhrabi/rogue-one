@@ -48,3 +48,48 @@ ROGUE_ONE_WORKER_LABEL=laptop
 ROGUE_ONE_STUCK_TIMEOUT_MS=300000
 REVIEWER=claude-adversarial
 ```
+
+## CLI
+
+```sh
+# Long-lived worker — connects to yavin-iv and executes runs.
+rogue-one worker
+
+# Short-lived — creates a run via the REST API and exits.
+rogue-one start "<instructions>" "<ticket-url>" --repo-config-id <uuid>
+```
+
+`rogue-one start` flags:
+
+| Flag                       | Default | Notes                                                  |
+|----------------------------|---------|--------------------------------------------------------|
+| `--repo-config-id <uuid>`  | —       | Required for now. Auto-detection lands in a later task. |
+| `--ticket-provider <p>`    | `jira`  | One of `jira`, `linear`, `github`.                      |
+
+The `ticketId` is derived from the URL's last path segment (e.g. `https://jira/browse/ENG-1` → `ENG-1`).
+
+## Using the slash command
+
+The repo ships a Claude Code slash command at `.claude/commands/rogue-one.md`.
+Inside any Claude Code session opened on a clone of this repo it registers
+`/rogue-one`, which shells to `rogue-one start "$ARGUMENTS"`.
+
+Prerequisites:
+
+1. A `rogue-one worker` process is already running and connected to yavin-iv
+   (otherwise the run row will sit at `pending` until a worker picks it up).
+2. The `rogue-one` binary is on `PATH`. From inside this repo:
+   ```sh
+   pnpm build
+   npm link        # or: pnpm link --global
+   ```
+
+Usage:
+
+```
+/rogue-one "fix the thing" "https://jira.example.com/browse/ENG-1"
+```
+
+The command returns within ~1s with a dashboard URL — watch the yavin-iv UI
+for status updates rather than waiting on the slash command itself.
+
