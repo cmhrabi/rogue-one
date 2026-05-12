@@ -90,6 +90,7 @@ async function runStart(
       ticketProvider: ticketProvider as TicketProvider,
       ticketId,
       ticketUrl,
+      ticketTitle: deriveTicketTitle(instructions),
       instructions,
     });
     const baseUrl =
@@ -125,6 +126,13 @@ export function deriveTicketId(ticketUrl: string): string {
   const last = segments[segments.length - 1];
   if (!last) return ticketUrl;
   return last;
+}
+
+// Placeholder until Claude generates a title from the instructions.
+export function deriveTicketTitle(instructions: string): string {
+  const trimmed = instructions.trim().replace(/\s+/g, " ");
+  if (!trimmed) return "Untitled run";
+  return trimmed.length > 120 ? `${trimmed.slice(0, 117)}...` : trimmed;
 }
 
 function summarizeBody(body: unknown): string {

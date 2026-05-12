@@ -313,12 +313,17 @@ All via env vars for v1:
 ```
 YAVIN_URL=http://localhost:3000
 YAVIN_API_KEY=<shared key>
-ANTHROPIC_API_KEY=<for the SDK>
 GITHUB_TOKEN=<for PR creation>
 ROGUE_ONE_WORKER_LABEL=laptop  # shows up in yavin-iv as the worker name
 ROGUE_ONE_STUCK_TIMEOUT_MS=300000
 REVIEWER=claude-adversarial
 ```
+
+Agent auth is **not** an env var: the Claude Agent SDK spawns the `claude` CLI
+under the hood and rides on whatever session `claude login` established. This
+keeps Claude Pro/Max subscription users out of the API-billing path. If
+`ANTHROPIC_API_KEY` is set in the environment, the SDK will quietly switch to
+API billing — the worker warns about this at startup.
 
 Repo-specific config (paths, base branch, concurrency) lives in yavin-iv's `repo_configs` and is fetched on `run.start`. rogue-one has no local repo config file.
 

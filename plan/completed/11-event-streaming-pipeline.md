@@ -39,3 +39,26 @@ Every SDK message from `runSession()` is fanned out to yavin-iv as `event.append
 
 - Bound the buffered `agent.message` queue. If it grows past N (say 256) before a stage UUID arrives, log critical and drop the oldest — UUID lookup should be near-instant in practice.
 - Don't try to dedupe — yavin-iv's `seq` allocation handles ordering.
+
+## Completion notes — 2026-05-12
+
+### Files changed
+- `src/worker/eventEmitter.ts` (new) — `EventEmitter` factory + `RunEventSink` interface + `AgentMessageRecord` shape.
+- `src/worker/eventEmitter.test.ts` (new) — 8 unit tests covering routing, buffering, queue cap, UUID transitions.
+
+### Deviations from spec
+- The plan suggested the EventEmitter would do the `getRun()` UUID lookup itself. Implementation keeps that on the worker (which already has the `YavinClient` instance) — the emitter just exposes `setCurrentStageUuid(uuid)`. The `restClient` constructor argument is kept for future moves of stage-discovery logic into the emitter without a breaking API change.
+- `usdCost` is plumbed but always `undefined` from `fromAgentEvent` (per-turn USD is not computed; only end-of-session totals from task 08). Callers that have a USD figure can still call `sink.agentMessage({ ..., usdCost })` directly.
+- `system`/`result`/`raw` events all emit `log` (per the plan) — content payload is `{ message, extra? }`.
+
+### Tests added
+- `src/worker/eventEmitter.test.ts` — pre-UUID immediate sends; buffer→flush; queue overflow drops oldest; post-UUID immediate sends; UUID-null→UUID-new resumption; `fromAgentEvent` routing for each kind.
+
+### Follow-ups
+- Task 10 wires this into the worker (`startWorker` constructs an `EventEmitter`; each `run.start` calls `bindRun` then `getRun` for the UUID then `setCurrentStageUuid`).
+- Task 26 will populate per-turn `usdCost` once the cost tracker exists.
+
+### Verification
+- `pnpm typecheck` — clean.
+- `pnpm lint` — clean.
+- `pnpm test` — 50 passing (42 prior + 8 new).

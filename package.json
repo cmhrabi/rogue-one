@@ -12,7 +12,7 @@
     "rogue-one": "bin/rogue-one"
   },
   "scripts": {
-    "build": "tsc -p .",
+    "build": "tsc -p . && mkdir -p dist/agents/prompts && cp src/agents/prompts/*.md dist/agents/prompts/",
     "dev": "tsx watch src/worker/index.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit",
@@ -20,6 +20,7 @@
     "test": "tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.139",
     "@cmhrabi/yavin-protocol": "^0.0.1",
     "commander": "^12.1.0",
     "pino": "^9.5.0",

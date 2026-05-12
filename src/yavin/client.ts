@@ -35,6 +35,7 @@ export interface CreateRunInput {
   ticketProvider: TicketProvider;
   ticketId: string;
   ticketUrl: string;
+  ticketTitle: string;
   instructions: string;
 }
 
