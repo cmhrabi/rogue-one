@@ -1,0 +1,39 @@
+{
+  "name": "rogue-one",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Headless SDLC workflow engine — Claude Code worker that drives the yavin-iv pipeline.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "rogue-one": "bin/rogue-one"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsx watch src/worker/index.ts",
+    "lint": "eslint \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/worker/index.js",
+    "test": "tsx --test \"src/**/*.test.ts\""
+  },
+  "dependencies": {
+    "@cmhrabi/yavin-protocol": "^0.0.1",
+    "commander": "^12.1.0",
+    "pino": "^9.5.0",
+    "ws": "^8.20.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/ws": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "eslint": "^9.14.0",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
